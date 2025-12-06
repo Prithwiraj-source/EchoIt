@@ -1,0 +1,55 @@
+* {
+    margin: 0%;
+    padding: 0%;
+}
+
+.top {
+    background-color: rgb(87, 69, 192);
+    color: white;
+    padding: 20px;
+}
+
+.bigbox {
+    background-color: green;
+    width: auto;
+    height: 900px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    background-image: url("./download.jpeg");
+}
+
+.smallbox {
+    background-color: rgb(144, 187, 172);
+    width: 45%;
+    height: 45%;
+    padding: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#UserID,
+#password {
+    padding: 15px;
+    margin: 10px;
+    width: 200px;
+}
+
+#login {
+    padding: 15px;
+    width: 250px;
+    margin: 10px;
+    background-color: darkblue;
+    color: white;
+}
+
+#newuser {
+    padding: 15px;
+    width: 250px;
+    margin: 10px;
+    background-color: darkblue;
+    color: white;
+}
