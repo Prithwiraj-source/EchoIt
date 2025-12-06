@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return d.toLocaleString();
     };
     (function createMessagingWidget() {
-        // root container
         const widget = document.createElement('div');
         widget.id = 'chat-widget';
         widget.style.position = 'fixed';
@@ -31,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         widget.style.transition = 'transform .25s ease, opacity .25s ease';
         document.body.appendChild(widget);
 
-        // header
         const header = document.createElement('div');
         header.style.padding = '12px';
         header.style.display = 'flex';
@@ -222,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function autoReplyFor(contactId, received) {
-            // lightweight heuristics for reply
             const lower = received.toLowerCase();
             if (lower.includes('hello') || lower.includes('hi')) return 'Hi! How can I help?';
             if (lower.includes('help') || lower.includes('issue')) return 'Tell me more about the issue and I will try to help.';
@@ -252,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function commentsKeyFor(img) {
             const src = img.src || img.getAttribute('data-src') || img.getAttribute('src') || (img.alt || '');
-            // simple base64-ish key (not secure, just local)
             return 'comments_' + btoa(unescape(encodeURIComponent(src))).replace(/=/g, '');
         }
 
@@ -269,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         imgs.forEach((img, idx) => {
-            // create a small comments button element below the image
             const container = document.createElement('div');
             container.style.display = 'flex';
             container.style.alignItems = 'center';
@@ -370,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.body.appendChild(panel);
 
-            // functions to render comments
+            
             const key = commentsKeyFor(img);
             function renderComments() {
                 commentsList.innerHTML = '';
@@ -426,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.openImageComments = function (imageIndex = 0) {
             const panels = Array.from(document.querySelectorAll('div[style*="position: fixed"]'));
-            // naive: show first panel that was created
             if (panels[0]) panels[0].style.display = 'flex';
         };
 
