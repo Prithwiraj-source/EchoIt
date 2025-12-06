@@ -1,23 +1,12 @@
-/* comments_messages.js
-   Adds:
-   - Messaging widget (persistent via localStorage)
-   - Commenting UI on images inside .center-div (persistent via localStorage)
-*/
+
 
 document.addEventListener('DOMContentLoaded', () => {
-    /****************************************************************
-     * Utility helpers
-     ****************************************************************/
     const qs = s => document.querySelector(s);
     const qsa = s => Array.from(document.querySelectorAll(s));
     const formatTime = ts => {
         const d = new Date(ts);
         return d.toLocaleString();
     };
-
-    /****************************************************************
-     * ---------- Messaging widget ----------
-     ****************************************************************/
     (function createMessagingWidget() {
         // root container
         const widget = document.createElement('div');
@@ -63,14 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
         widget.appendChild(header);
 
-        // layout: contacts pane (left) + chat pane (right) — vertical on small widths
         const bodyWrap = document.createElement('div');
         bodyWrap.style.display = 'flex';
         bodyWrap.style.flex = '1';
         bodyWrap.style.minHeight = '0';
         widget.appendChild(bodyWrap);
 
-        // contacts list
         const contactsPane = document.createElement('div');
         contactsPane.style.width = '120px';
         contactsPane.style.minWidth = '100px';
@@ -80,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         contactsPane.style.boxSizing = 'border-box';
         bodyWrap.appendChild(contactsPane);
 
-        // chat pane
         const chatPane = document.createElement('div');
         chatPane.style.flex = '1';
         chatPane.style.display = 'flex';
@@ -88,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatPane.style.minHeight = '0';
         bodyWrap.appendChild(chatPane);
 
-        // chat messages area
         const messagesArea = document.createElement('div');
         messagesArea.style.flex = '1';
         messagesArea.style.padding = '12px';
@@ -98,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesArea.style.flexDirection = 'column';
         chatPane.appendChild(messagesArea);
 
-        // input bar
         const inputBar = document.createElement('div');
         inputBar.style.display = 'flex';
         inputBar.style.padding = '10px';
@@ -111,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
         chatPane.appendChild(inputBar);
 
-        // collapse behavior
         const collapseBtn = header.querySelector('#chat-collapse');
         let collapsed = false;
         collapseBtn.addEventListener('click', () => {
@@ -127,8 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // messaging storage helpers
-        const MSG_KEY = 'demo_messages_v1'; // object: { contactId: [{from, name, text, ts}] }
+        const MSG_KEY = 'demo_messages_v1'; 
         function loadMessages() {
             try {
                 const raw = localStorage.getItem(MSG_KEY);
@@ -141,14 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem(MSG_KEY, JSON.stringify(obj));
         }
 
-        // sample contacts (id -> display)
         const CONTACTS = [
             { id: 'alice', name: 'Alice' },
             { id: 'bob', name: 'Bob' },
             { id: 'support', name: 'Support' }
         ];
 
-        // render contacts
         function renderContacts(selectedId) {
             contactsPane.innerHTML = '';
             CONTACTS.forEach(c => {
@@ -170,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // render chat messages for a contact
         let activeContact = CONTACTS[0].id;
         function renderMessagesFor(contactId) {
             messagesArea.innerHTML = '';
@@ -207,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderMessagesFor(contactId);
         }
 
-        // send message
         const sendBtn = inputBar.querySelector('#chat-send');
         const msgInput = inputBar.querySelector('#chat-input');
         const nameInput = inputBar.querySelector('#chat-name');
@@ -232,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
             msgInput.value = '';
             renderMessagesFor(activeContact);
 
-            // small simulated reply from contact after a short delay
             setTimeout(() => {
                 const replyText = autoReplyFor(activeContact, text);
                 const reply = { from: 'them', name: CONTACTS.find(c => c.id === activeContact)?.name || 'Contact', text: replyText, ts: Date.now() };
@@ -253,16 +230,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'Thanks — I got that. I will check and reply shortly.';
         }
 
-        // small HTML escaping
         function escapeHtml(s) {
             return (s + '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
         }
 
-        // initialise
         renderContacts(activeContact);
         openChat(activeContact);
 
-        // quick show/hide toggle with keyboard 'm'
         document.addEventListener('keydown', (e) => {
             if (e.key.toLowerCase() === 'm' && !(e.ctrlKey || e.metaKey || e.altKey)) {
                 widget.style.display = widget.style.display === 'none' ? 'flex' : 'none';
@@ -271,17 +245,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })();
 
-    /****************************************************************
-     * ---------- Per-image commenting ----------
-     ****************************************************************/
     (function enableImageComments() {
         const imgs = qsa('.center-div img');
 
         if (!imgs.length) return;
 
-        // comment storage helper: key per image (hash of src)
         function commentsKeyFor(img) {
-            // use src or alt + index to disambiguate
             const src = img.src || img.getAttribute('data-src') || img.getAttribute('src') || (img.alt || '');
             // simple base64-ish key (not secure, just local)
             return 'comments_' + btoa(unescape(encodeURIComponent(src))).replace(/=/g, '');
@@ -319,14 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.style.fontWeight = '600';
 
             container.appendChild(btn);
-            // insert after image
             if (img.parentElement) {
                 img.parentElement.insertBefore(container, img.nextSibling);
             } else {
                 img.insertAdjacentElement('afterend', container);
             }
 
-            // comment panel (overlay)
             const panel = document.createElement('div');
             panel.style.position = 'fixed';
             panel.style.left = '0';
@@ -351,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
             box.style.boxShadow = '0 18px 60px rgba(0,0,0,0.4)';
             panel.appendChild(box);
 
-            // header
+            
             const header = document.createElement('div');
             header.style.padding = '12px';
             header.style.display = 'flex';
@@ -361,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             header.innerHTML = `<div style="font-weight:700">Comments</div><button style="border:0;background:transparent;cursor:pointer;font-size:18px">✕</button>`;
             box.appendChild(header);
 
-            // top preview of the image
+            
             const previewWrap = document.createElement('div');
             previewWrap.style.display = 'flex';
             previewWrap.style.gap = '12px';
@@ -378,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
             box.appendChild(previewWrap);
 
-            // comments list
+            
             const commentsList = document.createElement('div');
             commentsList.style.padding = '12px';
             commentsList.style.overflowY = 'auto';
@@ -388,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
             commentsList.style.gap = '8px';
             box.appendChild(commentsList);
 
-            // add comment form
+            
             const formBar = document.createElement('div');
             formBar.style.padding = '12px';
             formBar.style.display = 'flex';
@@ -425,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 commentsList.scrollTop = commentsList.scrollHeight;
             }
 
-            // open/close handlers
+            
             btn.addEventListener('click', () => {
                 panel.style.display = 'flex';
                 renderComments();
@@ -433,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
             header.querySelector('button').addEventListener('click', () => panel.style.display = 'none');
             panel.addEventListener('click', (e) => { if (e.target === panel) panel.style.display = 'none'; });
 
-            // post comment
+            
             const nameInput = formBar.querySelector('#cm-name');
             const textInput = formBar.querySelector('#cm-text');
             const send = formBar.querySelector('#cm-send');
@@ -449,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderComments();
             });
 
-            // helper esc to close
+            
             document.addEventListener('keydown', (e) => {
                 if (panel.style.display === 'flex' && e.key === 'Escape') {
                     panel.style.display = 'none';
@@ -457,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // export small API in case other scripts want to open comment UI
         window.openImageComments = function (imageIndex = 0) {
             const panels = Array.from(document.querySelectorAll('div[style*="position: fixed"]'));
             // naive: show first panel that was created
@@ -466,9 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })();
 
-    /****************************************************************
-     * Small helpers used above (must be declared after)
-     ****************************************************************/
     function escapeHtml(s) {
         return (s || '').toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
